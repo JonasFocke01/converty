@@ -1,7 +1,8 @@
 # Building / Installing:
 
-1. Build the package: mv executable to /target/deb_release_build/bin
-2. Install the package: from /target : 'sudo dpkg -i deb_release_build.deb'
+1. Construct the package: mv executable to /target/deb_release_build/bin
+2. Build the package: 'dpkg-deb --build deb_release_build'
+3. Install the package: from /target : 'sudo dpkg -i deb_release_build.deb'
 
 note: /deb_release_build/ should look like this:
 - /bin
