@@ -1,5 +1,7 @@
 use std::{env};
 
+use colored::*;
+
 fn main() {
     let mut args: Vec<String> = env::args().collect();
     args.remove(0);
@@ -21,33 +23,34 @@ fn main() {
 
 fn help(flag: String) {
     print!("\n");
-    print!("Spawned help dialog because {}\n", flag);
+    print!("{} {}\n","Spawned help dialog because".bright_red(), flag.bright_red());
     print!("\n");
-    print!("CONVERTY supports the following modi:\n");
+    print!("{}\n", "===================== CONVERTY ====================".green());
+    print!("{}\n" , "Helpcenter. Here are some Converty modi you can use".bright_green());
     print!("\n");
-    print!("------------NUMBER SYSTEM------------\n");
+    print!("{}\n", "-------------------NUMBER SYSTEM-------------------".green());
     print!("FLAG: -radix\n");
     print!("\n");
-    print!("This needs a second flag indicating the given numbertype\n");
+    print!("{}\n", "This needs a second flag\nindicating the given numbertype".bright_green());
     print!("\n");
     print!("Hexadecimal: -x\n");
     print!("Decimal: -d\n");
     print!("Binary: -b\n");
     print!("\n");
-    print!("Possible command should look like this:\n");
+    print!("{}\n", "Possible command should look like this:".bright_green());
     print!("converty -radix -d 250\n");
     print!("converty -radix -x fa\n");
     print!("converty -radix -b 11111010\n");
     print!("\n");
-    print!("------------COLOR SYSTEM-------------\n");
+    print!("{}\n", "-------------------COLOR SYSTEM--------------------".green());
     print!("FLAG: -color\n");
     print!("\n");
-    print!("This needs a second flag indicating the given colortype\n");
+    print!("{}\n", "This needs a second flag\nindicating the given colortype".bright_green());
     print!("\n");
     print!("RGB: -rgb\n");
     print!("HEX: -hex\n");
     print!("\n");
-    print!("Possible command should look like this:\n");
+    print!("{}\n", "Possible command should look like this:".bright_green());
     print!("converty -color -rgb 255,10,17\n");
     print!("converty -color -hex faffaa (note that you have to leave out the #)\n");
 
