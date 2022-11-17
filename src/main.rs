@@ -1,4 +1,4 @@
-use std::env;
+use std::{env};
 
 fn main() {
     let mut args: Vec<String> = env::args().collect();
@@ -7,7 +7,11 @@ fn main() {
         help(String::from("Too few arguments"));
     }
     match args.remove(0).as_str() {
-        "-n" => match number_system(args) {
+        "-radix" => match radix(args) {
+                        Ok(m) => print!("{}\n", m),
+                        Err(error) => help(String::from(error))
+                    },
+        "-color" => match color_system(args) {
                         Ok(m) => print!("{}\n", m),
                         Err(error) => help(String::from(error))
                     },
@@ -22,7 +26,7 @@ fn help(flag: String) {
     print!("CONVERTY supports the following modi:\n");
     print!("\n");
     print!("------------NUMBER SYSTEM------------\n");
-    print!("FLAG: -n\n");
+    print!("FLAG: -radix\n");
     print!("\n");
     print!("This needs a second flag indicating the given numbertype\n");
     print!("\n");
@@ -30,13 +34,27 @@ fn help(flag: String) {
     print!("Decimal: -d\n");
     print!("Binary: -b\n");
     print!("\n");
-    print!("A possible command should look like this:\n");
-    print!("converty -n -d 17\n");
+    print!("Possible command should look like this:\n");
+    print!("converty -radix -d 250\n");
+    print!("converty -radix -x fa\n");
+    print!("converty -radix -b 11111010\n");
+    print!("\n");
+    print!("------------COLOR SYSTEM-------------\n");
+    print!("FLAG: -color\n");
+    print!("\n");
+    print!("This needs a second flag indicating the given colortype\n");
+    print!("\n");
+    print!("RGB: -rgb\n");
+    print!("HEX: -hex\n");
+    print!("\n");
+    print!("Possible command should look like this:\n");
+    print!("converty -color -rgb 255,10,17\n");
+    print!("converty -color -hex faffaa (note that you have to leave out the #)\n");
 
     std::process::exit(0);
 }
 
-fn number_system(mut args: Vec<String>) -> Result<String, String> {
+fn radix(mut args: Vec<String>) -> Result<String, String> {
     if args.len() < 2 {
         return Err(String::from("Too few arguments"))
     } else if args.len() > 2 {
@@ -58,7 +76,7 @@ fn number_system(mut args: Vec<String>) -> Result<String, String> {
                 },
         "-d" => {
                     let input_as_string: String = args.remove(0);
-                    let input_as_number: u64 = match str::trim(input_as_string.as_str()).parse::<u64>() {
+                    let input_as_number: u64 = match input_as_string.as_str().parse::<u64>() {
                         Ok(n) => n,
                         Err(_) => return Err(String::from("error while parsing ") + input_as_string.as_str())
                     };
@@ -117,7 +135,6 @@ fn read_hex_to_number(input: &mut String) -> Result<u64, String> {
             None => return Err(String::from("could not convert hex string into bytes")),
             m => m.unwrap()
         };
-        print!("{}\n", current_byte);
         if current_byte ==  48 ||
            current_byte ==  49 ||
            current_byte ==  50 ||
@@ -143,4 +160,81 @@ fn read_hex_to_number(input: &mut String) -> Result<u64, String> {
     }
 
     Ok(result)
+}
+
+fn color_system(mut args: Vec<String>) -> Result<String, String> {
+    if args.len() < 2 {
+        return Err(String::from("Too few arguments"))
+    } else if args.len() > 2 {
+        return Err(String::from("Too many arguments"))
+    }
+
+    match args.remove(0).as_str() {
+        "-rgb" => {
+                    let input_as_string: String = args.remove(0);
+                    let input_as_vec: Vec<&str> = input_as_string.split(",").collect();
+                    let mut result_string = String::from("Conversion result:\n");
+
+                    result_string.push_str(" RGB: ");
+                    // ? rgb
+                    for i in 0..3 {
+                        result_string.push_str(input_as_vec[i]);
+                        if i < 2 {
+                            result_string.push_str(", ");
+                        }
+                    }
+
+                    result_string.push('\n');
+
+                    // ? hex
+                    result_string.push_str(" HEX: #");
+                    for i in 0..3 {
+                        result_string.push_str(format!("{:x}", String::from(input_as_vec[i]).parse::<u64>().unwrap()).as_str());
+                    }
+
+                    Ok(
+                        result_string
+                    )
+                },
+        "-hex" => {
+                    let input_as_string: String = args.remove(0);
+                    let mut input_as_vec: Vec<&str> = vec!();
+                    let mut result_string: String = String::from("Conversion result:\n");
+
+                    input_as_vec.push(&input_as_string[..2]);
+                    input_as_vec.push(&input_as_string[2..4]);
+                    input_as_vec.push(&input_as_string[4..6]);
+
+                    let mut input_as_number_vec = vec!();
+
+                    for i in 0..3 {
+                        input_as_number_vec.push(match read_hex_to_number(&mut String::from(input_as_vec[i])) {
+                            Ok(n) => n,
+                            Err(m) => return Err(m)
+                        });
+                    }
+
+                    result_string.push_str(" RGB: ");
+                    // ? rgb
+                    for i in 0..3 {
+                        result_string.push_str(input_as_number_vec[i].to_string().as_str());
+                        if i < 2 {
+                            result_string.push_str(", ");
+                        }
+                    }
+
+                    result_string.push('\n');
+
+                    // ? hex
+                    result_string.push_str(" HEX: #");
+                    for i in 0..3 {
+                        result_string.push_str(format!("{:x}", input_as_number_vec[i]).as_str());
+                    }
+
+                    Ok(
+                        result_string
+                    )
+                },
+        arg => return Err(String::from("Found wrong argument: ") + arg)
+    }
 }
